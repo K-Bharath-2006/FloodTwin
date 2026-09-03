@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "DamBreak Citizen Alert",
+    "slug": "dam-flood-citizen-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B1120"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Location is used to evaluate location-based flood risk zones and deliver emergency evacuation warnings.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Location is used in the background to alert you when entering predicted critical flood danger zones."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B1120"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "POST_NOTIFICATIONS",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow DamBreak Alert to determine your location for offline flood risk detection."
+        }
+      ]
+    ]
+  }
+}
