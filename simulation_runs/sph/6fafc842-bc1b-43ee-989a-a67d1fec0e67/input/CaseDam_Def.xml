@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<case>
+    <casedef>
+        <constantsdef>
+            <gravity x="0" y="0" z="-9.81" comment="Gravitational acceleration" />
+            <rhop0 value="1000" comment="Reference fluid density (kg/m3)" />
+            <hdp value="2.0" comment="Smoothing length coefficient" />
+            <c0 value="50.0" comment="Artificial speed of sound" />
+            <gamma value="7.0" comment="Polytropic constant for Tait equation" />
+        </constantsdef>
+        <execution>
+            <special>
+                <initialize>
+                    <boundzero value="0" />
+                </initialize>
+            </special>
+            <parameters>
+                <parameter key="PosDouble" value="1" comment="Double precision" />
+                <parameter key="StepAlgorithm" value="2" comment="Verlet algorithm" />
+                <parameter key="VerletSteps" value="40" />
+                <parameter key="Kernel" value="2" comment="Wendland quintic kernel" />
+                <parameter key="ViscoTreatment" value="1" comment="Artificial viscosity" />
+                <parameter key="Visco" value="0.05" />
+                <parameter key="TimeMax" value="14400.0" comment="Total simulation duration" />
+                <parameter key="TimeOut" value="60.0" comment="Output time interval (s)" />
+                <parameter key="IncDp" value="1.0" comment="Particle spacing" />
+            </parameters>
+        </execution>
+    </casedef>
+    <geometry>
+        <definition dp="1.0">
+            <pointmin x="-500" y="-200" z="0" />
+            <pointmax x="2500" y="200" z="100" />
+        </definition>
+        <commands>
+            <mainlist>
+                <!-- Reservoir Fluid Body -->
+                <setdrawmode mode="full" />
+                <setmkfluid mk="0" />
+                <drawbox>
+                    <boxfill>solid</boxfill>
+                    <point x="-450" y="-150" z="0" />
+                    <size x="450" y="300" z="57.0" />
+                </drawbox>
+                <!-- Dam Structure & Breach Gap -->
+                <setmkbound mk="0" />
+                <drawbox>
+                    <boxfill>solid</boxfill>
+                    <point x="0" y="-180" z="0" />
+                    <size x="15" y="142.5" z="24.0" />
+                </drawbox>
+                <drawbox>
+                    <boxfill>solid</boxfill>
+                    <point x="0" y="37.5" z="0" />
+                    <size x="15" y="142.5" z="24.0" />
+                </drawbox>
+                <shapeout file="DamGeometry" />
+            </mainlist>
+        </commands>
+    </geometry>
+</case>
