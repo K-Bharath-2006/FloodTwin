@@ -1,0 +1,7 @@
+{
+  "mdu_path": "./simulation_runs/delft3d\\07070504-7486-4f34-9f24-c3c2ea855daf\\input\\flow2d.mdu",
+  "bc_path": "./simulation_runs/delft3d\\07070504-7486-4f34-9f24-c3c2ea855daf\\input\\boundary_conditions.bc",
+  "q_peak_cumec": 5890.0,
+  "duration_sec": 14400.0,
+  "t_form_sec": 4320.0
+}
