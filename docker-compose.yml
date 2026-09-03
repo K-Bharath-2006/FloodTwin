@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # PostgreSQL with PostGIS Spatial Extensions
+  postgis:
+    image: postgis/postgis:16-3.4
+    container_name: damflood_postgis
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-damflood_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+      - ./docker/init-postgis.sql:/docker-entrypoint-initdb.d/init-postgis.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-damflood_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for background queue and caching
+  redis:
+    image: redis:7.2-alpine
+    container_name: damflood_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend API Server
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: damflood_backend
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=PRODUCTION
+      - DATABASE_URL=postgresql://postgres:postgres@postgis:5432/damflood_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - STORAGE_PATH=/app/storage
+      - SIMULATION_WORKSPACE_PATH=/app/simulation_runs
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID:-}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL:-}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY:-}
+      - DELFT3D_EXECUTABLE=${DELFT3D_EXECUTABLE:-}
+      - SPH_EXECUTABLE=${SPH_EXECUTABLE:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storage:/app/storage
+      - ./simulation_runs:/app/simulation_runs
+    depends_on:
+      postgis:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Background Worker for Hydrodynamic Simulations & GIS Processing
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: damflood_worker
+    restart: unless-stopped
+    command: python -m backend.app.jobs.worker
+    environment:
+      - ENVIRONMENT=PRODUCTION
+      - DATABASE_URL=postgresql://postgres:postgres@postgis:5432/damflood_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - STORAGE_PATH=/app/storage
+      - SIMULATION_WORKSPACE_PATH=/app/simulation_runs
+    volumes:
+      - ./storage:/app/storage
+      - ./simulation_runs:/app/simulation_runs
+    depends_on:
+      postgis:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # React Frontend Dashboard
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: damflood_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgis_data:
+  redis_data:
