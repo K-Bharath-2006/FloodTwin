@@ -1,0 +1,39 @@
+# Delft3D Flexible Mesh Model Definition File (D-Flow FM)
+[general]
+fileVersion           = 1.09
+fileType              = modelDef
+program               = D-Flow FM
+version               = 2.0.0
+
+[geometry]
+netFile               = grid_net.nc
+bathymetryFile        = dem_topobathymetry.xyz
+waterLevIniFile       = initial_water_level.ini
+dryPointsFile         = drypoints.xyz
+
+[numerics]
+CFLMax                = 0.7
+AdvecType             = 3
+Limtypsm              = 1
+
+[physics]
+UnifFrictCoef         = 0.035
+UnifFrictType         = 1
+Gravity               = 9.81
+
+[time]
+RefDate               = 20260901
+Tunit                 = S
+DtUser                = 1.0
+TStart                = 0.0
+TStop                 = 14400.0
+
+[external forcing]
+ExtForceFile          = boundary_conditions.bc
+
+[output]
+OutputDir             = C:\Black-Drive\Projects\SIH-2026\Dam-Flood\simulation_runs\delft3d\ed220eb2-fc50-44a2-aabf-ddd6eea064d0\output
+MapInterval           = 300.0
+HisInterval           = 60.0
+WaqInterval           = 0.0
+StatsInterval         = 300.0
