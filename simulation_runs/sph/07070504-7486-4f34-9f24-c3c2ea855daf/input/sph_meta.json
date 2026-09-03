@@ -1,0 +1,8 @@
+{
+  "xml_path": "./simulation_runs/sph\\07070504-7486-4f34-9f24-c3c2ea855daf\\input\\CaseDam_Def.xml",
+  "particle_spacing_m": 1.0,
+  "dam_height_m": 24.0,
+  "reservoir_water_level_m": 57.0,
+  "breach_width_m": 75.0,
+  "duration_sec": 14400.0
+}
